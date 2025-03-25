@@ -1,0 +1,29 @@
+import cv2
+import torch
+from facenet_pytorch import MTCNN, InceptionResnetV1, fixed_image_standardization
+from torchvision import transforms
+from PIL import Image
+import numpy as np
+import os
+
+if __name__ == "__main__":
+    # choose device and load MTCNN
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    mtcnn = MTCNN(keep_all=True, device=device)
+    
+    # load image, pixel range: 0-255
+    image = cv2.imread("./dataset/raw/lfw-deepfunneled/Aaron_Guiel/Aaron_Guiel_0001.jpg")
+    
+    # detect all face and crop, pixel range from -1 to 1, size [C, W, H]
+    image_cropped = mtcnn(image)[0].numpy()
+    
+    # denormalize image to 0-255
+    image_cropped = (image_cropped + 1) * 127.5
+    image_cropped = np.clip(image_cropped, 0, 255).astype(np.uint8)
+    
+    # change image shape from [C, W, H] to [W, H, C]
+    image_cropped = np.transpose(image_cropped, (1, 2, 0))
+    
+    # display cropped image
+    cv2.imshow("Image", image_cropped)
+    cv2.waitKey(0)
