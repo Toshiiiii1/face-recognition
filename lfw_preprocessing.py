@@ -6,6 +6,7 @@ from PIL import Image
 import numpy as np
 import os
 import pandas as pd
+from tqdm import tqdm
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 mtcnn = MTCNN(keep_all=True, device=device, thresholds=[0.5, 0.5, 0.5])
@@ -32,13 +33,10 @@ if __name__ == "__main__":
     names, embeddings = [], []
     dataset_path = "./dataset/raw/lfw-deepfunneled"
     
-    i = 1
-    
     # all person
-    for name in os.listdir(dataset_path):
+    for name in tqdm(os.listdir(dataset_path)):
         # one person, n is total image of this person
         embeds = []
-        print(name)
         for img in os.listdir(f"{dataset_path}/{name}"):
             img_file = os.path.join(f"{dataset_path}/{name}", img)
             image = cv2.imread(img_file)
@@ -52,17 +50,15 @@ if __name__ == "__main__":
                 embeds.append(feature_vector)
         
         if len(embeds) == 0:
-            continue        
+            continue
         
         embeds = torch.cat(embeds, dim=0) # [n, 512]
         final_embedding = torch.mean(embeds, dim=0) # [512]
         embeddings.append(final_embedding)
         names.append(name)
-
-        if i < 10:
-            i += 1
-        else:
-            break
     
-    print(names)
+    np.save("face_embeddings.npy", {"names": names, "embeddings": embeddings})
+    print(len(names))
     print(len(embeddings))
+    # print(names[0])
+    # print(embeddings[0])
