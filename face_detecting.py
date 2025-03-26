@@ -9,10 +9,14 @@ import os
 if __name__ == "__main__":
     # choose device and load MTCNN
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    mtcnn = MTCNN(keep_all=True, device=device)
+    mtcnn = MTCNN(keep_all=True, device=device, thresholds=[0.5, 0.5, 0.5])
     
     # load image, pixel range: 0-255
-    image = cv2.imread("./dataset/raw/lfw-deepfunneled/Aaron_Guiel/Aaron_Guiel_0001.jpg")
+    image = cv2.imread("./dataset/raw/lfw-deepfunneled/Aaron_Pena/Aaron_Pena_0001.jpg")
+    
+    # print(image.shape)
+    # cv2.imshow("Image", image)
+    # cv2.waitKey(0)
     
     # detect all face and crop, pixel range from -1 to 1, size [C, W, H]
     image_cropped = mtcnn(image)[0].numpy()
