@@ -12,7 +12,7 @@ if __name__ == "__main__":
     mtcnn = MTCNN(keep_all=True, device=device, thresholds=[0.5, 0.5, 0.5])
     
     # load image, pixel range: 0-255
-    image = cv2.imread("./dataset/raw/lfw-deepfunneled/Aaron_Pena/Aaron_Pena_0001.jpg")
+    image = cv2.imread("./dataset/test_image/Aaron_Guiel.jpg")
     
     # print(image.shape)
     # cv2.imshow("Image", image)
