@@ -14,22 +14,6 @@ model = InceptionResnetV1(pretrained="casia-webface", classify=False).to(device)
 model.eval()
 
 if __name__ == "__main__":
-    # 1 person
-    # embeddings = []
-    # for img in os.listdir("./dataset/raw/lfw-deepfunneled/Aaron_Peirsol"):
-    #     img_path = os.path.join("./dataset/raw/lfw-deepfunneled/Aaron_Peirsol", img)
-    #     image = cv2.imread(img_path)
-    #     image_cropped = mtcnn(image) # [3, 160, 160], pixel range: [-1, 1] (normalized)
-        
-    #     with torch.no_grad():
-    #         feature_vector = model(image_cropped.to(device)) # [1, 512]
-    #         embeddings.append(feature_vector)
-            
-    # # print(embeddings) [4, 1, 512]
-    # embeddings = torch.cat(embeddings, dim=0) # [4, 512]
-    # final_embedding = torch.mean(embeddings, dim=0) # [512]
-    # print(final_embedding)
-    
     names, embeddings = [], []
     dataset_path = "./dataset/raw/lfw-deepfunneled"
     
@@ -57,8 +41,7 @@ if __name__ == "__main__":
         embeddings.append(final_embedding)
         names.append(name)
     
-    np.save("face_embeddings.npy", {"names": names, "embeddings": embeddings})
+    torch.save(embeddings, "face_embeddings.pt")
+    np.save("face_names.npy", names)
     print(len(names))
     print(len(embeddings))
-    # print(names[0])
-    # print(embeddings[0])
