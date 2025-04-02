@@ -177,4 +177,8 @@ pyrightconfig.json
 # Dataset
 dataset/
 
+# Other
+*.pt
+*.npy
+
 # End of https://www.toptal.com/developers/gitignore/api/python
