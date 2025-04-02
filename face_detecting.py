@@ -9,7 +9,7 @@ import os
 if __name__ == "__main__":
     # choose device and load MTCNN
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    mtcnn = MTCNN(keep_all=True, device=device, thresholds=[0.5, 0.5, 0.5])
+    mtcnn = MTCNN(keep_all=True, device=device, thresholds=[0.5, 0.5, 0.5], margin=20)
     
     # load image, pixel range: 0-255
     image = cv2.imread("./dataset/test_image/Aaron_Guiel.jpg")
