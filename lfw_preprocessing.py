@@ -9,8 +9,8 @@ import pandas as pd
 from tqdm import tqdm
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-mtcnn = MTCNN(keep_all=True, device=device, thresholds=[0.5, 0.5, 0.5])
-model = InceptionResnetV1(pretrained="casia-webface", classify=False).to(device)
+mtcnn = MTCNN(keep_all=False, device=device, thresholds=[0.5, 0.5, 0.5])
+model = InceptionResnetV1(pretrained="vggface2", classify=False).to(device)
 model.eval()
 
 if __name__ == "__main__":
@@ -23,14 +23,16 @@ if __name__ == "__main__":
         embeds = []
         for img in os.listdir(f"{dataset_path}/{name}"):
             img_file = os.path.join(f"{dataset_path}/{name}", img)
-            image = cv2.imread(img_file)
-            face_detected = mtcnn(image) # [1, 3, 160, 160], pixel range: [-1, 1] (normalized), it could be None if no face detected
+            image = Image.open(img_file).convert("RGB")
+            # [1, 3, 160, 160] if keep_all=True, [3, 160, 160] if keep_all=False, pixel range: [-1, 1] (normalized), it could be None if no face detected
+            face_detected = mtcnn(image)
             
             if face_detected is None:
                 continue
             
             with torch.no_grad():
-                feature_vector = model(face_detected.to(device)) # [1, 512]
+                feature_vector = model(face_detected.unsqueeze(0).to(device)) # [1, 512]
+                # feature_vector = model(face_detected.to(device)) # [1, 512]
                 embeds.append(feature_vector)
         
         if len(embeds) == 0:
@@ -41,7 +43,7 @@ if __name__ == "__main__":
         embeddings.append(final_embedding)
         names.append(name)
     
-    torch.save(embeddings, "face_embeddings.pt")
-    np.save("face_names.npy", names)
+    torch.save(embeddings, "face_embeddings_vggface2.pt")
+    np.save("face_names_vggface2.npy", names)
     print(len(names))
     print(len(embeddings))
